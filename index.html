@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+<meta charset="UTF-8" />
+<title>2048bit AkashicRecords</title>
+
+<style type="text/css">
+#root{
+	width:100%;
+	text-align: center;
+}
+#root div{
+	width: 80%;  
+    margin: 0 auto;
+	text-align: center;
+}
+#id_canvasScope {
+	position:relative;
+	/*border:8px solid #333;*/
+	border-color:#000;
+}
+</style>
+
+<script type="text/javascript" src="Record.js"></script>
+
+</head>
+
+<body>
+<div id="root">
+  <div>
+    <h1>2048bit AkashicRecords</h1>
+  </div>
+  <div>
+    <canvas id="id_canvasScope" width="256" height="256"></canvas>
+    <form id="id_form">
+      <p>Era <input type="text" id="id_textEra" width="512" />
+      <!--<input type="button" id="id_buttonSetEra" width="100" value="Set" />--></p>
+      <p>Fill 
+      <select id="id_selectfill">
+       <option value="---">--Select--</option>
+       <option value="White">White</option>
+       <option value="Black">Black</option>
+       <option value="Red">Red</option>
+       <option value="Blue">Blue</option>
+      </select>
+      or <input type="button" id="id_buttonFillRnd" value="Random" />
+      </p>
+    </form>
+  </div>
+</div>
+</body>
+</html>
