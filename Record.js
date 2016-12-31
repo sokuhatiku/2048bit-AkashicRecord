@@ -1,10 +1,5 @@
 // JavaScript Document
 
-(ScriptRunner=function(v){var i,n,l,p,c={},w=window,t=setTimeout;for(i=0,n=v.length;i<n;++i){l=v[i];if(typeof l=='string'||l instanceof String){l={'':l}}for(p in l){if(p){if(w[p]){continue}c[p]=1}(function(j){var s=document.createElement('script');s.type='text/javascript';s.charset='UTF-8';s.src=j;t(function(){document.documentElement.appendChild(s)},0)})(l[p])}}return function(f){if(f){t(function(){for(p in c){if(!w[p]){return t(arguments.callee,99)}}f()},0)}return arguments.callee}})
-([
-    {HugeInt: 'HugeInt_0_5_a6/main.js'}
-])
-
 // 場の定義
 var worldWidth = 32; // 世界の横幅
 var worldHeight = 32; // 世界の縦幅
@@ -171,11 +166,19 @@ function getEra(){
 	
 	var stringEra = String();
 	var i=0;
+	var j=0;
 	while(i < arraySize - 1){
-		stringEra = ((Record[i] & ~0) >>> 0).toString(2) + stringEra;
+		while(j < 32){
+			stringEra = stringEra + ((Record[i] & (1 << j)) != 0 ? "1" : "0");
+			j = (j+1)|0;
+		}
 		i = (i+1)|0;
+		j = 0;
 	}
-	stringEra = ((Record[i] & remainMsk) >>> 0).toString(2) + stringEra;
+	while((1 << j) & remainMsk != 0){
+		stringEra = stringEra + ((Record[i] & (1 << j)) != 0 ? "1" : "0");
+		j = (j+1)|0;
+	}
 	return stringEra;
 }
 
