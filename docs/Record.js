@@ -19,9 +19,6 @@ ARECORD.remainMsk; // レコード配列末尾の有効桁マスク
 ARECORD.dataMsk; // 1データの情報量マスク
 ARECORD.record; // レコード本体
 
-//var ctxscope; // 2次元描画領域
-//var textEra; // 時代表示
-
 
 ////////////////////////////
 // 初期化
@@ -47,30 +44,6 @@ ARECORD.Init = function(width, height, bits){
 	this.Fill(0);
 }
 
-//var onload = function(){
-//	
-//	var canvasScope = document.getElementById('id_canvasScope');
-//	if(!canvasScope || !canvasScope.getContext) {
-//		alert("本ページの閲覧はHTML5対応ブラウザで行ってください");
-//		return false;
-//	}
-//	canvasScope.addEventListener('mousedown', clickEvent, true);
-//	canvasScope.addEventListener('mouseup', upEvent, true);
-//	canvasScope.addEventListener('mousemove', moveEvent, true);
-//	canvasScope.addEventListener('blur', upEvent, false);
-//	ctxscope = canvasScope.getContext('2d');
-//
-//	textEra = document.getElementById('id_textEra');
-//	//document.getElementById('id_buttonSetEra').addEventListener('click', SetErafunc, true);
-//	
-//	document.getElementById('id_buttonFillRnd').addEventListener('click', FillRandom, true);
-//	document.getElementById('id_selectfill').addEventListener('change', selectFillerEvent, true);
-//	
-//	FillRandom();
-//	console.log(record);
-//	
-//}
-
 
 ////////////////////////////
 // 情報開示
@@ -78,54 +51,6 @@ ARECORD.Init = function(width, height, bits){
 ARECORD.GetRecordArraySize = function(){
 	return this.arraySize;
 }
-
-////////////////////////////
-// イベント処理
-////////////////////////////
-//var clicking = false;
-//var fillmode = 0;
-//function clickEvent(event){
-//	var rect = event.target.getBoundingClientRect();
-//	var x = Math.floor((event.clientX - rect.left) / pixelSize);
-//	var y = Math.floor((event.clientY - rect.top ) / pixelSize);
-//	var addr = GetAddrFromCoord(x, y);
-//	
-//	fillmode = GetData(addr) +1;
-//	if(fillmode > dataMsk) fillmode = 0;
-//	SetData(addr, fillmode);
-//	drawPixel(x,y, fillmode);
-//	
-//	clicking = true;
-//	event.returnValue = false;
-//	refleshEra();
-//	return false;
-//}
-//
-//function upEvent(event){
-//	clicking = false;
-//	event.returnValue = false;
-//	return false;
-//}
-//
-//function moveEvent(event){
-//	if(clicking == false) return;
-//	var rect = event.target.getBoundingClientRect();
-//	var x = Math.floor((event.clientX - rect.left) / pixelSize);
-//	var y = Math.floor((event.clientY - rect.top ) / pixelSize);
-//	var addr = GetAddrFromCoord(x, y);
-//	
-//	SetData(addr, fillmode);
-//	drawPixel(x,y, fillmode);
-//	event.returnValue = false;
-//	refleshEra();
-//	return false;
-//}
-//
-//function selectFillerEvent(event){
-//	var index = event.target.selectedIndex;
-//	if(index > 0) Fill(index - 1);
-//	event.target.selectedIndex = 0;
-//}
 
 
 ///////////////////////////////
@@ -204,7 +129,7 @@ ARECORD.GetEra = function (){
 	var stringEra = String();
 	var i=0;
 	var j=0;
-	while(i < this.arraySize - 1){
+	while(i < this.arraySize){
 		while(j < 32){
 			stringEra = stringEra + ((this.record[i] & (1 << j)) != 0 ? "1" : "0");
 			j = (j+1)|0;
@@ -212,10 +137,9 @@ ARECORD.GetEra = function (){
 		i = (i+1)|0;
 		j = 0;
 	}
-	while((1 << j) & this.remainMsk != 0){
-		stringEra = stringEra + ((this.record[i] & (1 << j)) != 0 ? "1" : "0");
-		j = (j+1)|0;
-	}
+	
+	// 2進数文字列が得られた。
+	
 	return stringEra;
 }
 
@@ -223,57 +147,26 @@ ARECORD.SetEra = function (bignumber){
 	// 10進数文字列をなんとかして2進数文字列に変換
 	// さらにそれをなんとかしてrecordに流し込む
 	// そしてエラーチェックも忘れない
+	
+	var i=0;
+	var j=0;
+	var k=0;
+	var num;
+	this.record[0] = 0;
+	console.log(bignumber.length)
+	while(i < this.bitSize){
+		if(k == 0)this.record[j] = 0;
+		num = bignumber.charAt(i) === '1' ? 1 : 0;
+		this.record[j] = this.record[j] + ((1 & num) << k)
+		if(k < 31){
+			k=(k+1)|0;
+		}else{
+			k=0;
+			j = (j+1)|0;
+		}
+		i=(i+1)|0;
+	}
 }
-
-
-/////////////////////////////////
-// 描画処理
-/////////////////////////////////
-//function refleshAll(){
-//	var addr = GetAddrFromIndex(0);
-//	var x = 0;
-//	var y = 0;
-//	var data;
-//	
-//	while(addr[0] < arraySize){
-//		data = GetData(addr);
-//		setFillStyle(data);
-//		ctxscope.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-//		
-//		NextAddr(addr);
-//		if(x >= worldWidth - 1){
-//			x = 0;
-//			y = (y+1)|0;
-//		}else{
-//			x = (x+1)|0;
-//		}
-//	}
-//	
-//	refleshEra();
-//}
-//
-//function refleshPixel(addr){
-//	var index = (addr[0] * 32 + addr[1]) / dataBits;
-//	var x = index / worldWidth;
-//	var y = index % worldWidth;
-//	
-//	setFillStyle(data);
-//	ctxscope.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-//}
-//
-//function drawPixel(x, y, data){
-//	setFillStyle(data);
-//	ctxscope.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-//}
-//
-//var dataColor = ["rgb(200,200,200)", "rgb(100,100,100)", "rgb(200,100,100)", "rgb(150,150,200)"];
-//function setFillStyle(data){
-//	ctxscope.fillStyle = dataColor[data];
-//}
-//
-//function refleshEra(){
-//	textEra.value = GetEra();
-//}
 
 
 //////////////////////////////////
